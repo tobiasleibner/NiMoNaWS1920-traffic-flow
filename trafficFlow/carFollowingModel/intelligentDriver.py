@@ -1,3 +1,8 @@
-import utilities
+import sys
+sys.path.append('../')
+import utilities.eulerSchemes as euler
+import utilities.rungeKutta as rk
 
-x = utilities.RungeKutta.solve(
+
+y = euler.ExplicitEuler()
+x = rk.RungeKutta()

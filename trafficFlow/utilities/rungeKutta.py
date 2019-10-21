@@ -1,4 +1,5 @@
 
 
 class RungeKutta:
-    pass
+    def __init__(self):
+        print("Allgemeines Runge Kutta Verfahren")
