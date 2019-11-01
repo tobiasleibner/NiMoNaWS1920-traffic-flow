@@ -7,21 +7,20 @@ except ImportError:  # Python 3
     import tkinter.font as tkFont
     import tkinter.ttk as ttk
 
-
 import numpy as np
 
 
-class CircularRoad(object):
-    def __init__(self, canvas, x0, y0, x1, y1, width=20, start_ang=0, full_extent=360, car_length=5, model=None, time_discretization_scheme=None, dt=1e-3):
+class CircularRoadSimulation(object):
+    def __init__(self, canvas, x0, y0, x1, y1, lane_width=20, car_length=5, model=None, time_discretization_scheme=None, dt=1e-1):
         self.custom_font = tkFont.Font(family="Helvetica", size=12, weight='bold')
         self.canvas = canvas
-        self.x0, self.y0, self.x1, self.y1 = x0+width, y0+width, x1-width, y1-width
+        self.x0, self.y0, self.x1, self.y1 = x0+lane_width, y0+lane_width, x1-lane_width, y1-lane_width
         self.tx, self.ty = (x1-x0) / 2, (y1-y0) / 2
-        self.width = width
-        self.start_ang = start_ang
-        self.full_extent = full_extent
+        self.lane_width = lane_width
+        self.start_ang = 0
+        self.full_extent = 360
         # draw static bar outline
-        w2 = width / 2
+        w2 = lane_width / 2
         self.oval_id1 = self.canvas.create_oval(self.x0-w2, self.y0-w2,
                                                 self.x1+w2, self.y1+w2)
         self.oval_id2 = self.canvas.create_oval(self.x0+w2, self.y0+w2,
@@ -31,9 +30,8 @@ class CircularRoad(object):
         self.steps = 0
         self.model = model
         self.time_discretization_scheme = time_discretization_scheme
-        self.y = np.concatenate((self.model.positions, self.model.velocities))
         self.time = 0.
-        self.timesteps_per_simulationstep = 500
+        self.timesteps_per_simulationstep = int(0.5/dt)
         self.dt = dt
 
     def start(self, interval=100):
@@ -42,14 +40,13 @@ class CircularRoad(object):
         self.extent = 0
         self.vehicles = []
 
-        for i, vehicle in enumerate(self.model.vehicles):
+        for vehicle in self.model.road.vehicles:
             self.vehicles.append(self.canvas.create_arc(self.x0, self.y0, self.x1, self.y1,
-                                                        start=self.model.positions[i]*self.full_extent, extent=self.car_length,
-                                                        width=self.width, style='arc'))
+                                                        start=vehicle.position*self.full_extent/self.model.road.full_length, extent=self.car_length,
+                                                        width=self.lane_width, style='arc'))
 
-        t = 't='+str(self.time)
-        self.label_id = self.canvas.create_text(self.tx, self.ty, text=t,
-                                                font=self.custom_font)
+        t = 't = ' + str(int(self.time))
+        self.label_id = self.canvas.create_text(self.tx, self.ty, text=t, font=self.custom_font)
         self.running = True
         self.canvas.after(interval, self.step, self.increment)
 
@@ -59,40 +56,13 @@ class CircularRoad(object):
             for i in range(self.timesteps_per_simulationstep):
                 self.steps = self.steps + 1
                 self.time = self.time + self.dt
-                self.y = self.model.simulate_one_step(self.time_discretization_scheme, self.time, self.y)
-            for i, vehicle in enumerate(self.model.vehicles):
-                self.canvas.itemconfigure(self.vehicles[i], start=self.y[i]*self.full_extent)
-            t = 't=' + str(self.time)
+                self.model.simulate_one_step(self.time_discretization_scheme, self.time)
+            for i, vehicle in enumerate(self.model.road.vehicles):
+                self.canvas.itemconfigure(self.vehicles[i], start=vehicle.position*self.full_extent/self.model.road.full_length)
+            t = 't = ' + str(int(self.time))
             self.canvas.itemconfigure(self.label_id, text=t)
 
         self.after_id = self.canvas.after(self.interval, self.step, delta)
 
     def toggle_pause(self):
         self.running = not self.running
-
-class CircularRoadSimulation(tk.Frame):
-    def __init__(self, model=None, time_discretization_scheme=None, dt=1e-3, master=None):
-        tk.Frame.__init__(self, master)
-        self.model = model
-        self.time_discretization_scheme = time_discretization_scheme
-        self.dt = dt
-        self.grid()
-        self.createWidgets()
-
-    def createWidgets(self):
-        self.canvas = tk.Canvas(self, width=500, height=500, bg='white')
-        self.canvas.grid(row=0, column=0, columnspan=2)
-
-        self.road_simulation = CircularRoad(self.canvas, 0, 0, 500, 500, 20, model=self.model, time_discretization_scheme=self.time_discretization_scheme, dt=self.dt)
-
-        self.pause_button = tk.Button(self, text='Pause', command=self.pause)
-        self.pause_button.grid(row=1, column=0)
-        self.quit_button = tk.Button(self, text='Quit', command=self.quit)
-        self.quit_button.grid(row=1, column=1)
-
-    def start(self):
-        self.road_simulation.start()
-        self.mainloop()
-
-    def pause(self):
-        self.road_simulation.toggle_pause()
