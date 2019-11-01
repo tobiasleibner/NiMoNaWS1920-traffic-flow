@@ -1,10 +1,12 @@
 # Notwendige Imports
+from trafficFlow.utilities.timeDiscretizationSchemes.baseTimeDiscretizationScheme import BaseTimeDiscretizationScheme
+
 from scipy.optimize import root
 import numpy as np
 
 
 # Klasse für das explizite Euler-Verfahren
-class ExplicitEulerScheme:
+class ExplicitEulerScheme(BaseTimeDiscretizationScheme):
     # Konstruktor, der die rechte Seite der ODE als Parameter function übergeben bekommt
     def __init__(self, function):
         self.function = function
@@ -15,7 +17,7 @@ class ExplicitEulerScheme:
 
 
 # Klasse für das implizite Euler-Verfahren
-class ImplicitEulerScheme:
+class ImplicitEulerScheme(BaseTimeDiscretizationScheme):
     # Konstruktor, der die rechte Seite (function) sowie deren Ableitung (jacobian) übergeben bekommt
     def __init__(self, function, jacobian):
         self.function = function

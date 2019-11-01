@@ -2,9 +2,9 @@ import sys
 sys.path.append('../')
 import trafficFlow.carFollowingModel.carFollowingModel as CarFollowingModel
 import trafficFlow.carFollowingModel.drivers.intelligentDriver as IntelligentDriver
-import trafficFlow.carFollowingModel.roads.roads as Roads
-import trafficFlow.utilities.eulerSchemes as EulerSchemes
-import trafficFlow.graphics.circularRoad as CircularRoad
+import trafficFlow.carFollowingModel.roads.circularRoad as Roads
+import trafficFlow.utilities.timeDiscretizationSchemes.eulerSchemes as EulerSchemes
+import trafficFlow.graphics.roads.circularRoad as CircularRoad
 import trafficFlow.graphics.roadSimulation as RoadSimulation
 
 
@@ -18,14 +18,13 @@ circularRoad.add_vehicle(vehicle1)
 circularRoad.add_vehicle(vehicle2)
 circularRoad.add_vehicle(vehicle3)
 
-circularRoad.initialize_uniformly()
+circularRoad.initialize_default()
 
-
-dt = 1e-1
-
-model = CarFollowingModel.CarFollowingModel(circularRoad, dt)
+model = CarFollowingModel.CarFollowingModel(circularRoad)
 
 eulerScheme = EulerSchemes.ExplicitEulerScheme(model.create_right_hand_side)
+
+dt = 1e-1
 
 simulation = RoadSimulation.RoadSimulation(RoadType=CircularRoad.CircularRoadSimulation, model=model, time_discretization_scheme=eulerScheme, dt=dt)
 simulation.master.title('Circular Road Simulation')

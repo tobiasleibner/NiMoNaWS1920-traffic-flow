@@ -1,9 +1,10 @@
-class CircularRoad:
+from .baseRoad import BaseRoad
+
+
+class CircularRoad(BaseRoad):
     def __init__(self, full_length=1000.):
+        super().__init__()
         self.full_length = full_length
-        self.number_of_vehicles = 0
-        self.vehicles = []
-        self.initialized = False
 
     def add_vehicle(self, vehicle):
         self.vehicles.append(vehicle)
@@ -16,9 +17,9 @@ class CircularRoad:
             vehicle.velocity = velocities[i]
         self.initialized = True
 
-    def initialize_uniformly(self):
+    def initialize_default(self):
         for i, vehicle in enumerate(self.vehicles):
-            vehicle.predecessor = self.vehicles[(i+1)%self.number_of_vehicles]
+            vehicle.predecessor = self.vehicles[(i+1) % self.number_of_vehicles]
             if i == 0:
                 vehicle.successor = self.vehicles[self.number_of_vehicles-1]
             else:

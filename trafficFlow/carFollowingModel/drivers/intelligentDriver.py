@@ -1,20 +1,17 @@
+from .baseDriver import BaseDriver
+
 import numpy as np
 
 
-class IntelligentDriver:
+class IntelligentDriver(BaseDriver):
     def __init__(self, s_0, v_0, delta, T, a, b):
+        super().__init__()
         self.s_0 = s_0
         self.v_0 = v_0
         self.delta = delta
         self.T = T
         self.a = a
         self.b = b
-
-        self.road = None
-        self.velocity = 0.
-        self.position = 0.
-        self.predecessor = None
-        self.successor = None
 
     def get_distance(self):
         return self.road.get_distance(self.predecessor.position, self.position)

@@ -56,7 +56,7 @@ class CircularRoadSimulation(object):
             for i in range(self.timesteps_per_simulationstep):
                 self.steps = self.steps + 1
                 self.time = self.time + self.dt
-                self.model.simulate_one_step(self.time_discretization_scheme, self.time)
+                self.model.simulate_one_step(self.time_discretization_scheme, self.time, self.dt)
             for i, vehicle in enumerate(self.model.road.vehicles):
                 self.canvas.itemconfigure(self.vehicles[i], start=vehicle.position*self.full_extent/self.model.road.full_length)
             t = 't = ' + str(int(self.time))
