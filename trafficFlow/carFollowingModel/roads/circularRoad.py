@@ -2,6 +2,30 @@ from .baseRoad import BaseRoad
 
 
 class CircularRoad(BaseRoad):
+    """
+    Class implementing the circular road (handling of vehicles etc., not the visualization)
+
+    Inherits from the BaseRoad class.
+
+    Attributes
+    ----------
+    full_length : double
+        physical length of the road
+
+    Methods
+    -------
+    add_vehicle(vehicle)
+        override method in class BaseRoad to add a driver/vehicle to the road
+    initialize(positions, velocities)
+        override method in class BaseRoad to initialize drivers/vehicles with the given positions and velocities
+    initialize_default()
+        override method in class BaseRoad to initialize drivers/vehicles using equidistant positions and zeros velocities
+    get_distance(position1, position2)
+        override method in class BaseRoad and compute distance with special treatment of circular geometry
+    get_position(position)
+        override method in class BaseRoad and return the correct position on the circle
+    """
+
     def __init__(self, full_length=1000.):
         super().__init__()
         self.full_length = full_length
