@@ -17,6 +17,7 @@ class ExplicitEulerScheme(BaseTimeDiscretizationScheme):
     apply(t, dt, y_old)
         override method in class BaseTimeDiscretizationScheme and perform a single step of the explicit Euler scheme
     """
+
     def __init__(self, function):
         self.function = function
 

@@ -1,3 +1,12 @@
+"""
+Example of intelligent drivers on a circular road
+
+First, the road is created and three drivers are added. The vehicles are initialized in a default manner.
+Then, the car following model on the circular road and the explicit Euler scheme to solve the arising ordinary
+differential equation are initialized. As the last step, the simulation is created, a title for the window is added
+and the simulation is started.
+"""
+
 import sys
 sys.path.append('../')
 import trafficFlow.carFollowingModel.carFollowingModel as CarFollowingModel
@@ -26,7 +35,9 @@ eulerScheme = EulerSchemes.ExplicitEulerScheme(model.create_right_hand_side)
 
 dt = 1e-1
 
-simulation = RoadSimulation.RoadSimulation(RoadType=CircularRoad.CircularRoadSimulation, model=model,
-                                           time_discretization_scheme=eulerScheme, dt=dt)
-simulation.master.title('Circular Road Simulation')
+simulation = RoadSimulation.RoadSimulation(RoadType=CircularRoad.CircularRoadSimulation,
+                                           model=model,
+                                           time_discretization_scheme=eulerScheme,
+                                           dt=dt)
+simulation.master.title("Circular Road Intelligent Driver Simulation")
 simulation.start()

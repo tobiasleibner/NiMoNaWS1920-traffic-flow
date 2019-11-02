@@ -7,8 +7,6 @@ except ImportError:  # Python 3
     import tkinter.font as tkFont
     import tkinter.ttk as ttk
 
-import numpy as np
-
 from .baseRoadSimulation import BaseRoadSimulation
 
 
@@ -74,9 +72,10 @@ class CircularRoadSimulation(BaseRoadSimulation):
 
         for vehicle in self.model.road.vehicles:
             vehicle.object_in_visualization = self.canvas.create_arc(self.x0, self.y0, self.x1, self.y1,
-                                                                     start=vehicle.position*self.full_extent/self.model.road.full_length,
+                                                                     start=vehicle.position * self.full_extent / self.model.road.full_length,
                                                                      extent=vehicle.length,
-                                                                     width=self.lane_width, style='arc')
+                                                                     width=self.lane_width,
+                                                                     style='arc')
 
         t = 't = ' + str(int(self.time))
         self.label_id = self.canvas.create_text(self.tx, self.ty, text=t, font=self.custom_font)
