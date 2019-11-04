@@ -25,17 +25,18 @@ class CarFollowingModel:
 
     def create_right_hand_side(self, t, y):
         acceleration = []
-        for vehicle in self.road.vehicles:
-            acceleration.append(vehicle.get_desired_acceleration())
-        return np.concatenate((y[self.road.number_of_vehicles:], acceleration))
+        for lane in self.road.lanes:
+            for vehicle in lane.vehicles:
+                acceleration.append(vehicle.get_desired_acceleration())
+        return np.concatenate((y[self.road.get_number_of_vehicles():], acceleration))
 
     def simulate_one_step(self, time_discretization_scheme, t, dt):
         y = []
-        for vehicle in self.road.vehicles:
+        for vehicle in self.road.get_vehicles():
             y.append(vehicle.position)
-        for vehicle in self.road.vehicles:
+        for vehicle in self.road.get_vehicles():
             y.append(vehicle.velocity)
         y = time_discretization_scheme.apply(t, dt, y)
-        for i, vehicle in enumerate(self.road.vehicles):
-            vehicle.position = self.road.get_position(y[i])
-            vehicle.velocity = y[self.road.number_of_vehicles + i]
+        for i, vehicle in enumerate(self.road.get_vehicles()):
+            vehicle.position = self.road.get_position(y[i], vehicle.lane)
+            vehicle.velocity = y[self.road.get_number_of_vehicles() + i]

@@ -24,10 +24,6 @@ class CircularRoadSimulation(BaseRoadSimulation):
         y coordinate of the center of the circle
     full_extent : double
         full extent of the circle
-    oval_id1 : Oval
-        outer oval modeling the road
-    oval_id2 : Oval
-        inner oval modeling the road
     running : bool
         determine whether the simulation is actually running or not
     steps : int
@@ -56,10 +52,11 @@ class CircularRoadSimulation(BaseRoadSimulation):
         self.tx, self.ty = (x1+x0) / 2, (y1+y0) / 2
         self.full_extent = 360
         lane_width2 = lane_width / 2
-        self.oval_id1 = self.canvas.create_oval(self.x0-lane_width2, self.y0-lane_width2,
-                                                self.x1+lane_width2, self.y1+lane_width2)
-        self.oval_id2 = self.canvas.create_oval(self.x0+lane_width2, self.y0+lane_width2,
-                                                self.x1-lane_width2, self.y1-lane_width2)
+        self.canvas.create_oval(self.x0-lane_width2, self.y0-lane_width2,
+                                self.x1+lane_width2, self.y1+lane_width2)
+        for i in range(self.model.road.number_of_lanes):
+            self.canvas.create_oval(self.x0+lane_width2+lane_width*i, self.y0+lane_width2+lane_width*i,
+                                    self.x1-lane_width2-lane_width*i, self.y1-lane_width2-lane_width*i)
         self.running = False
         self.steps = 0
         self.time = 0.0
@@ -70,12 +67,16 @@ class CircularRoadSimulation(BaseRoadSimulation):
         self.increment = self.full_extent / interval
         self.extent = 0
 
-        for vehicle in self.model.road.vehicles:
-            vehicle.object_in_visualization = self.canvas.create_arc(self.x0, self.y0, self.x1, self.y1,
-                                                                     start=vehicle.position * self.full_extent / self.model.road.full_length,
-                                                                     extent=vehicle.length,
-                                                                     width=self.lane_width,
-                                                                     style='arc')
+        for i, lane in enumerate(self.model.road.lanes):
+            for vehicle in lane.vehicles:
+                vehicle.object_in_visualization = self.canvas.create_arc(self.x0+self.lane_width*(self.model.road.number_of_lanes-1-i),
+                                                                         self.y0+self.lane_width*(self.model.road.number_of_lanes-1-i),
+                                                                         self.x1-self.lane_width*(self.model.road.number_of_lanes-1-i),
+                                                                         self.y1-self.lane_width*(self.model.road.number_of_lanes-1-i),
+                                                                         start=vehicle.position * self.full_extent / lane.full_length,
+                                                                         extent=vehicle.length,
+                                                                         width=self.lane_width,
+                                                                         style='arc')
 
         t = 't = ' + str(int(self.time))
         self.label_id = self.canvas.create_text(self.tx, self.ty, text=t, font=self.custom_font)
@@ -88,9 +89,10 @@ class CircularRoadSimulation(BaseRoadSimulation):
                 self.time = self.time + self.dt
                 self.model.simulate_one_step(self.time_discretization_scheme, self.time, self.dt)
 
-            for vehicle in self.model.road.vehicles:
-                self.canvas.itemconfigure(vehicle.object_in_visualization,
-                                          start=vehicle.position * self.full_extent / self.model.road.full_length)
+            for lane in self.model.road.lanes:
+                for vehicle in lane.vehicles:
+                    self.canvas.itemconfigure(vehicle.object_in_visualization,
+                                              start=vehicle.position * self.full_extent / lane.full_length)
 
             t = 't = ' + str(int(self.time))
             self.canvas.itemconfigure(self.label_id, text=t)

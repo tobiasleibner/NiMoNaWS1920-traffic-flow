@@ -50,7 +50,8 @@ class IntelligentDriver(BaseDriver):
         self.length = length
 
     def get_distance_to_predecessor(self):
-        return self.road.get_distance(self.predecessor.position, self.position) - self.length
+        return self.lane.road.get_distance(self.predecessor.position, self.position, self.predecessor.lane, self.lane)\
+               - self.length
 
     def get_speed_difference_to_predecessor(self):
         return self.predecessor.velocity - self.velocity
