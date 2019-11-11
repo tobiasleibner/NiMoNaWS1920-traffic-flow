@@ -60,7 +60,7 @@ class CircularRoadSimulation(BaseRoadSimulation):
         self.running = False
         self.steps = 0
         self.time = 0.0
-        self.timesteps_per_simulationstep = int(0.25/dt)
+        self.timesteps_per_simulationstep = int(0.15/dt)
 
     def start(self, interval=50):
         self.interval = interval
@@ -89,11 +89,18 @@ class CircularRoadSimulation(BaseRoadSimulation):
                 self.time = self.time + self.dt
                 self.model.simulate_one_step(self.time_discretization_scheme, self.time, self.dt)
 
-            for lane in self.model.road.lanes:
+            for i, lane in enumerate(self.model.road.lanes):
                 for vehicle in lane.vehicles:
-                    self.canvas.itemconfigure(vehicle.object_in_visualization,
-                                              start=vehicle.position * self.full_extent / lane.full_length)
-
+                    self.canvas.delete(vehicle.object_in_visualization)
+                    vehicle.object_in_visualization = self.canvas.create_arc(
+                            self.x0 + self.lane_width * (self.model.road.number_of_lanes - 1 - i),
+                            self.y0 + self.lane_width * (self.model.road.number_of_lanes - 1 - i),
+                            self.x1 - self.lane_width * (self.model.road.number_of_lanes - 1 - i),
+                            self.y1 - self.lane_width * (self.model.road.number_of_lanes - 1 - i),
+                            start=vehicle.position * self.full_extent / lane.full_length,
+                            extent=vehicle.length,
+                            width=self.lane_width,
+                            style='arc')
             t = 't = ' + str(int(self.time))
             self.canvas.itemconfigure(self.label_id, text=t)
 

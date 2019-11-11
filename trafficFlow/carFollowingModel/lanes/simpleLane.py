@@ -18,16 +18,16 @@ class SimpleLane(BaseLane):
         override method in class BaseLane and place the vehicles equidistant on the lane
     """
     def __init__(self, full_length=1000.):
-        super().__init__()
-        self.full_length = full_length
+        super().__init__(full_length=full_length)
 
     def initialize_default(self):
         for i, vehicle in enumerate(self.vehicles):
-            vehicle.predecessor = self.vehicles[(i + 1) % self.number_of_vehicles]
-            if i == 0:
-                vehicle.successor = self.vehicles[self.number_of_vehicles - 1]
-            else:
-                vehicle.successor = self.vehicles[i - 1]
+            if self.number_of_vehicles > 1:
+                vehicle.predecessor = self.vehicles[(i + 1) % self.number_of_vehicles]
+                if i == 0:
+                    vehicle.successor = self.vehicles[-1]
+                else:
+                    vehicle.successor = self.vehicles[i - 1]
             vehicle.position = i * self.full_length / self.number_of_vehicles
             vehicle.velocity = 0.
         self.initialized = True

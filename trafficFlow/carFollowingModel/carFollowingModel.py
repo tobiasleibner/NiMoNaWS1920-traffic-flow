@@ -1,5 +1,9 @@
 import numpy as np
 
+import sys
+sys.path.append('../')
+import trafficFlow.utilities.exceptions as Exceptions
+
 
 class CarFollowingModel:
     """
@@ -22,6 +26,8 @@ class CarFollowingModel:
 
     def __init__(self, road):
         self.road = road
+        if not self.road.initialized:
+            raise Exceptions.NotInitializedError('The road has not been initialized, so the vehicles are not placed...')
 
     def create_right_hand_side(self, t, y):
         acceleration = []
@@ -39,4 +45,8 @@ class CarFollowingModel:
         y = time_discretization_scheme.apply(t, dt, y)
         for i, vehicle in enumerate(self.road.get_vehicles()):
             vehicle.position = self.road.get_position(y[i], vehicle.lane)
-            vehicle.velocity = y[self.road.get_number_of_vehicles() + i]
+            if y[self.road.get_number_of_vehicles() + i] < 0.:
+                vehicle.velocity = 0.
+            else:
+                vehicle.velocity = y[self.road.get_number_of_vehicles() + i]
+        self.road.update_data()

@@ -35,6 +35,9 @@ class BaseRoad:
         self.initialized = False
 
     def add_lane(self, lane):
+        if self.number_of_lanes > 0:
+            lane.lane_left = self.lanes[-1]
+            self.lanes[-1].lane_right = lane
         self.lanes.append(lane)
         lane.road = self
         self.number_of_lanes = self.number_of_lanes + 1
@@ -48,17 +51,29 @@ class BaseRoad:
     def get_vehicles(self):
         vehicles = []
         for lane in self.lanes:
-            for vehicle in lane.vehicles:
-                vehicles.append(vehicle)
+            vehicles.extend(lane.vehicles)
         return vehicles
+
+    def update_data(self):
+        raise NotImplementedError
 
     def initialize_default(self):
         for lane in self.lanes:
             lane.initialize_default()
+        self.initialize_predecessors_successors_right_left()
         self.initialized = True
 
-    def get_distance(self, position1, position2, lane1, lane2):
+    def initialize_predecessors_successors_right_left(self):
+        raise NotImplementedError
+
+    def get_distance(self, vehicle1, vehicle2):
         raise NotImplementedError
 
     def get_position(self, position, lane):
+        raise NotImplementedError
+
+    def between(self, first, second, third):
+        raise NotImplementedError
+
+    def in_front(self, predecessor, successor):
         raise NotImplementedError

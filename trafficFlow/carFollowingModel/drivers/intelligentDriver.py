@@ -38,23 +38,14 @@ class IntelligentDriver(BaseDriver):
         according to the intelligent driver model
     """
 
-    def __init__(self, s_0, v_0, delta, T, a, b, length=4.):
-        super().__init__()
+    def __init__(self, s_0, v_0, delta, T, a, b, length=4., lane_change_safety_distance=100., label=""):
+        super().__init__(length=length, lane_change_safety_distance=lane_change_safety_distance, label=label)
         self.s_0 = s_0
         self.v_0 = v_0
         self.delta = delta
         self.T = T
         self.a = a
         self.b = b
-
-        self.length = length
-
-    def get_distance_to_predecessor(self):
-        return self.lane.road.get_distance(self.predecessor.position, self.position, self.predecessor.lane, self.lane)\
-               - self.length
-
-    def get_speed_difference_to_predecessor(self):
-        return self.predecessor.velocity - self.velocity
 
     def get_desired_distance(self):
         return self.s_0 + max(0., self.velocity*self.T

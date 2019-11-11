@@ -21,16 +21,23 @@ class BaseLane:
         place the vehicles in a default manner on the lane
     """
 
-    def __init__(self):
+    def __init__(self, full_length=1000.):
+        self.full_length = full_length
         self.number_of_vehicles = 0
         self.road = None
         self.vehicles = []
+        self.lane_right = None
+        self.lane_left = None
         self.initialized = False
 
     def add_vehicle(self, vehicle):
         self.vehicles.append(vehicle)
         vehicle.lane = self
         self.number_of_vehicles = self.number_of_vehicles + 1
+
+    def lane_changes(self):
+        for vehicle in self.vehicles:
+            vehicle.lane_change()
 
     def initialize_default(self):
         raise NotImplementedError
