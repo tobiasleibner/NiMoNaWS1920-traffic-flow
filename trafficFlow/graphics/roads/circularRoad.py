@@ -26,12 +26,8 @@ class CircularRoadSimulation(BaseRoadSimulation):
         full extent of the circle
     running : bool
         determine whether the simulation is actually running or not
-    steps : int
-        number of steps performed until now
     time : double
         time expired until now
-    timesteps_per_simulationstep : int
-        time steps to perform before updating the visualization (depends on the time step size dt)
 
     Methods
     -------
@@ -52,52 +48,61 @@ class CircularRoadSimulation(BaseRoadSimulation):
         self.tx, self.ty = (x1+x0) / 2, (y1+y0) / 2
         self.full_extent = 360
         lane_width2 = lane_width / 2
+
         self.canvas.create_oval(self.x0-lane_width2, self.y0-lane_width2,
                                 self.x1+lane_width2, self.y1+lane_width2)
-        for i in range(self.model.road.number_of_lanes):
+        for i in range(self.model.road.get_number_of_lanes()):
             self.canvas.create_oval(self.x0+lane_width2+lane_width*i, self.y0+lane_width2+lane_width*i,
                                     self.x1-lane_width2-lane_width*i, self.y1-lane_width2-lane_width*i)
+
+        self.interval = int(self.dt * 1000)
+        self.label = None
+
         self.running = False
-        self.steps = 0
         self.time = 0.0
-        self.timesteps_per_simulationstep = int(0.25/dt)
 
-    def start(self, interval=50):
-        self.interval = interval
-        self.increment = self.full_extent / interval
-        self.extent = 0
-
+    def start(self):
         for i, lane in enumerate(self.model.road.lanes):
             for vehicle in lane.vehicles:
-                vehicle.object_in_visualization = self.canvas.create_arc(self.x0+self.lane_width*(self.model.road.number_of_lanes-1-i),
-                                                                         self.y0+self.lane_width*(self.model.road.number_of_lanes-1-i),
-                                                                         self.x1-self.lane_width*(self.model.road.number_of_lanes-1-i),
-                                                                         self.y1-self.lane_width*(self.model.road.number_of_lanes-1-i),
-                                                                         start=vehicle.position * self.full_extent / lane.full_length,
-                                                                         extent=vehicle.length,
-                                                                         width=self.lane_width,
-                                                                         style='arc')
+                shift = self.lane_width * (self.model.road.get_number_of_lanes() - 1 - i)
+                vehicle.object_in_visualization = self.canvas.create_arc(
+                    self.x0 + shift,
+                    self.y0 + shift,
+                    self.x1 - shift,
+                    self.y1 - shift,
+                    start=vehicle.position * self.full_extent / lane.full_length,
+                    extent=vehicle.length * self.full_extent / lane.full_length,
+                    width=self.lane_width,
+                    style='arc')
 
         t = 't = ' + str(int(self.time))
-        self.label_id = self.canvas.create_text(self.tx, self.ty, text=t, font=self.custom_font)
-        self.canvas.after(interval, self.step, self.increment)
+        self.label = self.canvas.create_text(self.tx, self.ty, text=t, font=self.custom_font)
 
-    def step(self, delta):
+        self.canvas.after(self.interval, self.step)
+
+    def step(self):
         if self.running:
-            for i in range(self.timesteps_per_simulationstep):
-                self.steps = self.steps + 1
-                self.time = self.time + self.dt
-                self.model.simulate_one_step(self.time_discretization_scheme, self.time, self.dt)
+            self.time = self.time + self.dt
+            self.model.simulate_one_step(self.time_discretization_scheme, self.time, self.dt)
 
-            for lane in self.model.road.lanes:
+            for i, lane in enumerate(self.model.road.lanes):
                 for vehicle in lane.vehicles:
-                    self.canvas.itemconfigure(vehicle.object_in_visualization,
-                                              start=vehicle.position * self.full_extent / lane.full_length)
+                    self.canvas.delete(vehicle.object_in_visualization)
+                    shift = self.lane_width * (self.model.road.get_number_of_lanes() - 1 - i)
+                    vehicle.object_in_visualization = self.canvas.create_arc(
+                        self.x0 + shift,
+                        self.y0 + shift,
+                        self.x1 - shift,
+                        self.y1 - shift,
+                        start=vehicle.position * self.full_extent / lane.full_length,
+                        extent=vehicle.length * self.full_extent / lane.full_length,
+                        width=self.lane_width,
+                        style='arc')
 
             t = 't = ' + str(int(self.time))
-            self.canvas.itemconfigure(self.label_id, text=t)
+            self.canvas.itemconfigure(self.label, text=t)
 
-        self.after_id = self.canvas.after(self.interval, self.step, delta)
+        self.canvas.after(self.interval, self.step)
 
     def toggle_pause(self):
         self.running = not self.running

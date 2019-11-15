@@ -38,8 +38,8 @@ class IntelligentDriver(BaseDriver):
         according to the intelligent driver model
     """
 
-    def __init__(self, s_0, v_0, delta, T, a, b, length=4.):
-        super().__init__()
+    def __init__(self, s_0, v_0, delta, T, a, b, length=4., label=""):
+        super().__init__(length=length, label=label)
         self.s_0 = s_0
         self.v_0 = v_0
         self.delta = delta
@@ -47,19 +47,17 @@ class IntelligentDriver(BaseDriver):
         self.a = a
         self.b = b
 
-        self.length = length
-
-    def get_distance_to_predecessor(self):
-        return self.lane.road.get_distance(self.predecessor.position, self.position, self.predecessor.lane, self.lane)\
-               - self.length
-
-    def get_speed_difference_to_predecessor(self):
-        return self.predecessor.velocity - self.velocity
-
     def get_desired_distance(self):
-        return self.s_0 + max(0., self.velocity*self.T
-                            + (self.velocity*self.get_speed_difference_to_predecessor()) / (2.*np.sqrt(self.a*self.b)))
+        successor, predecessor = self.lane.nearby_vehicles(self)
+        if predecessor:
+            return self.s_0 + max(0., self.velocity * self.T
+                                  + (self.velocity * self.lane.get_speed_difference(predecessor, self))
+                                  / (2. * np.sqrt(self.a * self.b)))
+        else:
+            return 0.
 
     def get_desired_acceleration(self):
-        return self.a * (1. - np.power(self.velocity/self.v_0, self.delta)
-                            - np.power(self.get_desired_distance()/self.get_distance_to_predecessor(), 2))
+        successor, predecessor = self.lane.nearby_vehicles(self)
+        return self.a * (1. - np.power(self.velocity / self.v_0, self.delta)
+                         - np.power(self.get_desired_distance()
+                                    / self.lane.get_distance(predecessor, self), 2))

@@ -55,10 +55,10 @@ class BaseRoadSimulation:
         self.time_discretization_scheme = time_discretization_scheme
         self.dt = dt
 
-    def start(self, interval=50):
+    def start(self):
         raise NotImplementedError
 
-    def step(selfself, delta):
+    def step(self):
         raise NotImplementedError
 
     def toggle_pause(self):

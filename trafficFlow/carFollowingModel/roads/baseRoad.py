@@ -4,8 +4,6 @@ class BaseRoad:
 
     Attributes
     ----------
-    number_of_lanes : int
-        total number of lanes of the road
     lanes : list(Lanes)
         lanes of the road
     initialized : bool
@@ -30,35 +28,32 @@ class BaseRoad:
     """
 
     def __init__(self):
-        self.number_of_lanes = 0
         self.lanes = []
         self.initialized = False
 
     def add_lane(self, lane):
         self.lanes.append(lane)
         lane.road = self
-        self.number_of_lanes = self.number_of_lanes + 1
+
+    def get_number_of_lanes(self):
+        return len(self.lanes)
 
     def get_number_of_vehicles(self):
         number_of_vehicles = 0
         for lane in self.lanes:
-            number_of_vehicles = number_of_vehicles + lane.number_of_vehicles
+            number_of_vehicles = number_of_vehicles + lane.get_number_of_vehicles()
         return number_of_vehicles
 
     def get_vehicles(self):
         vehicles = []
         for lane in self.lanes:
-            for vehicle in lane.vehicles:
-                vehicles.append(vehicle)
+            vehicles.extend(lane.vehicles)
         return vehicles
 
     def initialize_default(self):
         for lane in self.lanes:
             lane.initialize_default()
         self.initialized = True
-
-    def get_distance(self, position1, position2, lane1, lane2):
-        raise NotImplementedError
 
     def get_position(self, position, lane):
         raise NotImplementedError

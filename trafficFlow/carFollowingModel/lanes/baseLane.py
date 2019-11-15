@@ -1,3 +1,6 @@
+import math
+
+
 class BaseLane:
     """
     Base class for lanes used in the car following model
@@ -21,8 +24,9 @@ class BaseLane:
         place the vehicles in a default manner on the lane
     """
 
-    def __init__(self):
-        self.number_of_vehicles = 0
+    def __init__(self, full_length=100):
+        self.full_length = full_length
+
         self.road = None
         self.vehicles = []
         self.initialized = False
@@ -30,7 +34,22 @@ class BaseLane:
     def add_vehicle(self, vehicle):
         self.vehicles.append(vehicle)
         vehicle.lane = self
-        self.number_of_vehicles = self.number_of_vehicles + 1
+
+    def get_number_of_vehicles(self):
+        return len(self.vehicles)
+
+    def get_speed_difference(self, vehicle1, vehicle2):
+        if not vehicle2:
+            return math.inf
+        if not vehicle1:
+            return -math.inf
+        return vehicle2.velocity - vehicle1.velocity
+
+    def nearby_vehicles(self, vehicle):
+        raise NotImplementedError
+
+    def get_distance(self, vehicle1, vehicle2):
+        raise NotImplementedError
 
     def initialize_default(self):
         raise NotImplementedError
