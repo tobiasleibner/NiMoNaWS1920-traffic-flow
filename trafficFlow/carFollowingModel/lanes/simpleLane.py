@@ -28,21 +28,14 @@ class SimpleLane(BaseLane):
         if num_vehicles <= 1:
             return None, None
         index = self.vehicles.index(vehicle)
-        if index == 0:
-            return self.vehicles[-1], self.vehicles[1]
-        if index == num_vehicles-1:
-            return self.vehicles[-2], self.vehicles[0]
-        return self.vehicles[index-1], self.vehicles[index+1]
+        return self.vehicles[(index-1) % num_vehicles], self.vehicles[(index+1) % num_vehicles]
 
-    def get_distance(self, vehicle1, vehicle2):
-        if not vehicle1:
-            return self.full_length  # math.inf
-        if not vehicle2:
-            return self.full_length  # math.inf
-        if vehicle1.position >= vehicle2.position:
-            return vehicle1.position - vehicle2.position
-        else:
-            return vehicle1.position - vehicle2.position + vehicle1.lane.full_length
+    def nearby_vehicles_position(self, position):
+        num_vehicles = len(self.vehicles)
+        for i in range(len(self.vehicles)):
+            if self.road.between(self.vehicles[i].position, position, self.vehicles[(i + 1) % num_vehicles].position):
+                return self.vehicles[i], self.vehicles[(i + 1) % num_vehicles], i, (i + 1) % num_vehicles
+        return None, None, None, None
 
     def initialize_default(self):
         num_vehicles = self.get_number_of_vehicles()

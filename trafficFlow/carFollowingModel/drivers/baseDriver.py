@@ -22,11 +22,12 @@ class BaseDriver:
         compute the current acceleration of the vehicle
     """
 
-    def __init__(self, length=4, label=""):
+    def __init__(self, length=4, lane_change_safety_distance=40., label=""):
         self.lane = None
 
         self.label = label
         self.length = length
+        self.lane_change_safety_distance = lane_change_safety_distance
         self.velocity = 0.
         self.position = 0.
 
@@ -34,6 +35,9 @@ class BaseDriver:
 
     def __str__(self):
         return self.label
+
+    def lane_change(self):
+        raise NotImplementedError
 
     def get_desired_acceleration(self):
         raise NotImplementedError

@@ -29,6 +29,8 @@ class BaseLane:
 
         self.road = None
         self.vehicles = []
+        self.lane_right = None
+        self.lane_left = None
         self.initialized = False
 
     def add_vehicle(self, vehicle):
@@ -45,10 +47,14 @@ class BaseLane:
             return -math.inf
         return vehicle2.velocity - vehicle1.velocity
 
+    def lane_changes(self):
+        for vehicle in self.vehicles:
+            vehicle.lane_change()
+
     def nearby_vehicles(self, vehicle):
         raise NotImplementedError
 
-    def get_distance(self, vehicle1, vehicle2):
+    def nearby_vehicles_position(self, position):
         raise NotImplementedError
 
     def initialize_default(self):

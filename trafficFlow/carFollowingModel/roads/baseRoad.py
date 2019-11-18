@@ -32,6 +32,9 @@ class BaseRoad:
         self.initialized = False
 
     def add_lane(self, lane):
+        if len(self.lanes) > 0:
+            lane.lane_left = self.lanes[-1]
+            self.lanes[-1].lane_right = lane
         self.lanes.append(lane)
         lane.road = self
 
@@ -55,5 +58,15 @@ class BaseRoad:
             lane.initialize_default()
         self.initialized = True
 
+    def lane_changes(self):
+        for lane in self.lanes:
+            lane.lane_changes()
+
     def get_position(self, position, lane):
+        raise NotImplementedError
+
+    def get_distance(self, vehicle1, vehicle2):
+        raise NotImplementedError
+
+    def between(self, first, second, third):
         raise NotImplementedError

@@ -22,3 +22,20 @@ class CircularRoad(BaseRoad):
         if position < lane.full_length:
             return position
         return position - lane.full_length
+
+    def get_distance(self, vehicle1, vehicle2):
+        if not vehicle1:
+            return vehicle2.lane.full_length  # math.inf
+        if not vehicle2:
+            return vehicle1.lane.full_length  # math.inf
+        if vehicle1.position >= vehicle2.position:
+            return vehicle1.position - vehicle2.position
+        else:
+            return vehicle1.position - vehicle2.position + vehicle1.lane.full_length
+
+    def between(self, first, second, third):
+        if first >= second and (second >= third or third >= first):
+            return True
+        if first < second and first <= third <= second:
+            return True
+        return False

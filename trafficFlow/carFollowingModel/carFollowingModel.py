@@ -31,17 +31,23 @@ class CarFollowingModel:
         return np.concatenate((y[self.road.get_number_of_vehicles():], acceleration))
 
     def simulate_one_step(self, time_discretization_scheme, t, dt):
+        # get total number of vehicles
         num_vehicles = self.road.get_number_of_vehicles()
+        # fill current state for time discretization scheme
         y = []
         for vehicle in self.road.get_vehicles():
             y = np.append(y, vehicle.position)
         for vehicle in self.road.get_vehicles():
             y = np.append(y, vehicle.velocity)
+        # perform a single time step
         y = time_discretization_scheme.apply(t, dt, y)
+        # extract positions and velocities
         positions = y[:num_vehicles]
         velocities = y[num_vehicles:]
         # set negative velocities to zero
         velocities[velocities < 0.] = 0.
         # update vehicles
         for i, vehicle in enumerate(self.road.get_vehicles()):
-            vehicle.position, vehicle.velocity = positions[i], velocities[i]
+            vehicle.position, vehicle.velocity = self.road.get_position(positions[i], vehicle.lane), velocities[i]
+        # lane changes
+        self.road.lane_changes()
