@@ -1,4 +1,5 @@
 import math
+import numpy as np
 
 
 class BaseLane:
@@ -48,7 +49,8 @@ class BaseLane:
         return vehicle2.velocity - vehicle1.velocity
 
     def lane_changes(self):
-        for vehicle in self.vehicles:
+        vehicles_temp = np.copy(self.vehicles)
+        for vehicle in vehicles_temp:
             vehicle.lane_change()
 
     def nearby_vehicles(self, vehicle):

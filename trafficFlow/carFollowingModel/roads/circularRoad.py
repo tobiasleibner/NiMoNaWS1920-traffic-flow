@@ -29,9 +29,9 @@ class CircularRoad(BaseRoad):
         if not vehicle2:
             return vehicle1.lane.full_length  # math.inf
         if vehicle1.position >= vehicle2.position:
-            return vehicle1.position - vehicle2.position
+            return vehicle1.position - vehicle2.position - vehicle1.length
         else:
-            return vehicle1.position - vehicle2.position + vehicle1.lane.full_length
+            return vehicle1.position - vehicle2.position + vehicle1.lane.full_length - vehicle1.length
 
     def between(self, first, second, third):
         if first >= second and (second >= third or third >= first):
