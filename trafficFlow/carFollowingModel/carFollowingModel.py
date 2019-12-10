@@ -48,6 +48,9 @@ class CarFollowingModel:
         velocities[velocities < 0.] = 0.
         # update vehicles
         for i, vehicle in enumerate(self.road.get_vehicles()):
-            vehicle.position, vehicle.velocity = self.road.get_position(positions[i], vehicle.lane), velocities[i]
+            if self.road.get_position(positions[i], vehicle.lane) is not None:
+                vehicle.position, vehicle.velocity = self.road.get_position(positions[i], vehicle.lane), velocities[i]
+            else:
+                vehicle.lane.remove_vehicle_by_index(i)
         # lane changes
         self.road.lane_changes()

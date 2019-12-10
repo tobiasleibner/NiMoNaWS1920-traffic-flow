@@ -57,7 +57,7 @@ class RoadSimulation(tk.Frame):
         self.model = model
         self.time_discretization_scheme = time_discretization_scheme
         self.dt = dt
-        self.width = 500
+        self.width = 1500
         self.height = 500
 
         self.canvas = None
@@ -75,7 +75,7 @@ class RoadSimulation(tk.Frame):
 
         self.road_simulation = self.RoadType(self.canvas, 0, 0, self.width, self.height, model=self.model,
                                              time_discretization_scheme=self.time_discretization_scheme,
-                                             lane_width=20, dt=self.dt)
+                                             lane_width=30, dt=self.dt)
 
         self.start_button = tk.Button(self, text='Start', command=self.start_simulation)
         self.start_button.grid(row=1, column=0)

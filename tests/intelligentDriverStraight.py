@@ -11,14 +11,14 @@ import sys
 sys.path.append('../')
 import trafficFlow.carFollowingModel.carFollowingModel as CarFollowingModel
 import trafficFlow.carFollowingModel.drivers.intelligentDriver as IntelligentDriver
-import trafficFlow.carFollowingModel.roads.circularRoad as Road
+import trafficFlow.carFollowingModel.roads.straightRoad as Road
 import trafficFlow.carFollowingModel.lanes.simpleLane as Lane
 import trafficFlow.utilities.timeDiscretizationSchemes.eulerSchemes as EulerSchemes
-import trafficFlow.graphics.roads.circularRoad as CircularRoad
+import trafficFlow.graphics.roads.straightRoad as StraightRoad
 import trafficFlow.graphics.roadSimulation as RoadSimulation
 
 
-circularRoad = Road.CircularRoad()
+straightRoad = Road.StraightRoad()
 
 vehicle1 = IntelligentDriver.IntelligentDriver(s_0=7., v_0=26., delta=4., T=1., a=1., b=1.5, vehicle_type="car", label="car")
 vehicle2 = IntelligentDriver.IntelligentDriver(s_0=7., v_0=10., delta=4., T=1., a=1., b=1.5, vehicle_type="truck", label="truck")
@@ -34,8 +34,8 @@ length = 300.
 lane1 = Lane.SimpleLane(full_length=length)
 lane2 = Lane.SimpleLane(full_length=length-0.5)
 
-circularRoad.add_lane(lane1)
-circularRoad.add_lane(lane2)
+straightRoad.add_lane(lane1)
+straightRoad.add_lane(lane2)
 
 lane1.add_vehicle(vehicle1)
 lane1.add_vehicle(vehicle2)
@@ -46,18 +46,18 @@ lane2.add_vehicle(vehicle4)
 #lane2.add_vehicle(vehicle6)
 #lane2.add_vehicle(vehicle7)
 
-circularRoad.initialize_default()
+straightRoad.initialize_default()
 
 vehicle1.velocity = 20.
 vehicle1.position = 20.
 
-model = CarFollowingModel.CarFollowingModel(circularRoad)
+model = CarFollowingModel.CarFollowingModel(straightRoad)
 
 eulerScheme = EulerSchemes.ExplicitEulerScheme(model.create_right_hand_side)
 
 dt = 5e-2
 
-simulation = RoadSimulation.RoadSimulation(RoadType=CircularRoad.CircularRoadSimulation,
+simulation = RoadSimulation.RoadSimulation(RoadType=StraightRoad.StraightRoadSimulation,
                                            model=model,
                                            time_discretization_scheme=eulerScheme,
                                            dt=dt)

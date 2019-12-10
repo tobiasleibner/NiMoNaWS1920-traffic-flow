@@ -1,3 +1,6 @@
+vehicle_properties = {"car" : {"length" : 4., "filename" : "car01.png"}, "truck" : {"length" : 8., "filename" : "truck01.png"}}
+
+
 class BaseDriver:
     """
     Base class for drivers/vehicles used in the car following model
@@ -22,11 +25,12 @@ class BaseDriver:
         compute the current acceleration of the vehicle
     """
 
-    def __init__(self, length=4, lane_change_safety_distance=40., label=""):
+    def __init__(self, lane_change_safety_distance=40., vehicle_type="car", label=""):
         self.lane = None
 
         self.label = label
-        self.length = length
+        self.length = vehicle_properties[vehicle_type]["length"]
+        self.filename = vehicle_properties[vehicle_type]["filename"]
         self.lane_change_safety_distance = lane_change_safety_distance
         self.velocity = 0.
         self.position = 0.

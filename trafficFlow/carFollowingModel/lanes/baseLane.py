@@ -53,6 +53,9 @@ class BaseLane:
         for vehicle in vehicles_temp:
             vehicle.lane_change()
 
+    def remove_vehicle_by_index(self, index):
+        del self.vehicles[index]
+
     def nearby_vehicles(self, vehicle):
         raise NotImplementedError
 

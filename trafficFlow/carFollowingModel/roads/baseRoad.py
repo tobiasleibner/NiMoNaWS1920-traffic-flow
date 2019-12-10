@@ -33,8 +33,8 @@ class BaseRoad:
 
     def add_lane(self, lane):
         if len(self.lanes) > 0:
-            lane.lane_left = self.lanes[-1]
-            self.lanes[-1].lane_right = lane
+            lane.lane_right = self.lanes[-1]
+            self.lanes[-1].lane_left = lane
         self.lanes.append(lane)
         lane.road = self
 

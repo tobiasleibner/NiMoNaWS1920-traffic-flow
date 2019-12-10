@@ -38,8 +38,8 @@ class IntelligentDriver(BaseDriver):
         according to the intelligent driver model
     """
 
-    def __init__(self, s_0, v_0, delta, T, a, b, length=4., lane_change_safety_distance=50., label=""):
-        super().__init__(length=length, lane_change_safety_distance=lane_change_safety_distance, label=label)
+    def __init__(self, s_0, v_0, delta, T, a, b, lane_change_safety_distance=50., vehicle_type="car", label=""):
+        super().__init__(lane_change_safety_distance=lane_change_safety_distance, vehicle_type=vehicle_type, label=label)
         self.s_0 = s_0
         self.v_0 = v_0
         self.delta = delta

@@ -7,6 +7,9 @@ except ImportError:  # Python 3
     import tkinter.font as tkFont
     import tkinter.ttk as ttk
 
+from PIL import ImageTk, Image
+import numpy as np
+
 from .baseRoadSimulation import BaseRoadSimulation
 
 
@@ -41,19 +44,19 @@ class CircularRoadSimulation(BaseRoadSimulation):
         stop simulation and continue it
     """
 
-    def __init__(self, canvas, x0, y0, x1, y1, model, time_discretization_scheme, lane_width=20, dt=1e-1):
+    def __init__(self, canvas, x0, y0, x1, y1, model, time_discretization_scheme, lane_width=30, dt=1e-1):
         super().__init__(canvas, x0, y0, x1, y1, model, time_discretization_scheme, lane_width, dt)
 
         self.x0, self.y0, self.x1, self.y1 = x0+lane_width, y0+lane_width, x1-lane_width, y1-lane_width
         self.tx, self.ty = (x1+x0) / 2, (y1+y0) / 2
         self.full_extent = 360
-        lane_width2 = lane_width / 2
+        self.lane_width = lane_width
 
-        self.canvas.create_oval(self.x0-lane_width2, self.y0-lane_width2,
-                                self.x1+lane_width2, self.y1+lane_width2)
+        self.canvas.create_oval(self.x0, self.y0,
+                                self.x1, self.y1)
         for i in range(self.model.road.get_number_of_lanes()):
-            self.canvas.create_oval(self.x0+lane_width2+lane_width*i, self.y0+lane_width2+lane_width*i,
-                                    self.x1-lane_width2-lane_width*i, self.y1-lane_width2-lane_width*i)
+            self.canvas.create_oval(self.x0+lane_width*(i+1), self.y0+lane_width*(i+1),
+                                    self.x1-lane_width*(i+1), self.y1-lane_width*(i+1))
 
         self.interval = int(self.dt * 1000)
         self.label = None
@@ -64,16 +67,22 @@ class CircularRoadSimulation(BaseRoadSimulation):
     def start(self):
         for i, lane in enumerate(self.model.road.lanes):
             for vehicle in lane.vehicles:
-                shift = self.lane_width * (self.model.road.get_number_of_lanes() - 1 - i)
-                vehicle.object_in_visualization = self.canvas.create_arc(
-                    self.x0 + shift,
-                    self.y0 + shift,
-                    self.x1 - shift,
-                    self.y1 - shift,
-                    start=vehicle.position * self.full_extent / lane.full_length,
-                    extent=vehicle.length * self.full_extent / lane.full_length,
-                    width=self.lane_width,
-                    style='arc')
+                vehicle.image_temp = Image.open('../trafficFlow/graphics/images/vehicles/'+vehicle.filename).convert("RGBA")
+                new_height = int(self.full_extent*vehicle.length/lane.full_length) * 20
+                new_width = int(new_height/vehicle.image_temp.size[1]*vehicle.image_temp.size[0])
+                angle = ((self.full_extent * np.arctan2(-np.cos(vehicle.position * 2. * np.pi / lane.full_length), np.sin(vehicle.position * 2. * np.pi / lane.full_length)))/(2.*np.pi)) % 360 + 180
+                vehicle.image = ImageTk.PhotoImage(vehicle.image_temp.resize((new_width, new_height)).rotate(angle))
+                current_radius = (self.x1 - self.x0) / 2. - self.lane_width * (i + .5)
+                vehicle.object_in_visualization = self.canvas.create_image(self.x0 +
+                                                                           (self.x1 - self.x0) / 2. +
+                                                                           current_radius *
+                                                                           np.cos(vehicle.position * 2. * np.pi
+                                                                                  / lane.full_length),
+                                                                           self.y0 + (self.x1 - self.x0) / 2. -
+                                                                           current_radius *
+                                                                           np.sin(vehicle.position * 2. * np.pi
+                                                                                  / lane.full_length),
+                                                                           image=vehicle.image)
 
         t = 't = ' + str(int(self.time))
         self.label = self.canvas.create_text(self.tx, self.ty, text=t, font=self.custom_font)
@@ -89,15 +98,25 @@ class CircularRoadSimulation(BaseRoadSimulation):
                 for vehicle in lane.vehicles:
                     self.canvas.delete(vehicle.object_in_visualization)
                     shift = self.lane_width * (self.model.road.get_number_of_lanes() - 1 - i)
-                    vehicle.object_in_visualization = self.canvas.create_arc(
-                        self.x0 + shift,
-                        self.y0 + shift,
-                        self.x1 - shift,
-                        self.y1 - shift,
-                        start=vehicle.position * self.full_extent / lane.full_length,
-                        extent=vehicle.length * self.full_extent / lane.full_length,
-                        width=self.lane_width,
-                        style='arc')
+                    vehicle.image_temp = Image.open('../trafficFlow/graphics/images/vehicles/'+vehicle.filename).convert("RGBA")
+                    new_height = int(self.full_extent * vehicle.length / lane.full_length) * 20
+                    new_width = int(new_height / vehicle.image_temp.size[1] * vehicle.image_temp.size[0])
+                    angle = ((self.full_extent * np.arctan2(-np.cos(vehicle.position * 2. * np.pi / lane.full_length),
+                                                            np.sin(
+                                                                vehicle.position * 2. * np.pi / lane.full_length))) / (
+                                         2. * np.pi)) % 360 + 180
+                    vehicle.image = ImageTk.PhotoImage(vehicle.image_temp.resize((new_width, new_height)).rotate(angle))
+                    current_radius = (self.x1 - self.x0) / 2. - self.lane_width * (i + .5)
+                    vehicle.object_in_visualization = self.canvas.create_image(self.x0 +
+                                                                               (self.x1 - self.x0) / 2. +
+                                                                               current_radius *
+                                                                               np.cos(vehicle.position * 2. * np.pi
+                                                                                      / lane.full_length),
+                                                                               self.y0 + (self.x1 - self.x0) / 2. -
+                                                                               current_radius *
+                                                                               np.sin(vehicle.position * 2. * np.pi
+                                                                                      / lane.full_length),
+                                                                               image=vehicle.image)
 
             t = 't = ' + str(int(self.time))
             self.canvas.itemconfigure(self.label, text=t)

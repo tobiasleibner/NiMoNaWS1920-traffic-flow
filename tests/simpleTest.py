@@ -21,8 +21,10 @@ import trafficFlow.graphics.roadSimulation as RoadSimulation
 circularRoad = Road.CircularRoad()
 
 vehicle1 = IntelligentDriver.IntelligentDriver(s_0=7., v_0=56., delta=4., T=1., a=1., b=1.5, length=3., label="car")
-vehicle2 = IntelligentDriver.IntelligentDriver(s_0=7., v_0=35., delta=4., T=1., a=0.8, b=1.5, length=8., label="truck")
+vehicle2 = IntelligentDriver.IntelligentDriver(s_0=7., v_0=35., delta=4., T=1., a=0.8, b=1.5, label="truck")
 vehicle3 = IntelligentDriver.IntelligentDriver(s_0=7., v_0=54., delta=4., T=1., a=1., b=1.5)
+vehicle4 = IntelligentDriver.IntelligentDriver(s_0=7., v_0=54., delta=4., T=1., a=1., b=1.5)
+vehicle5 = IntelligentDriver.IntelligentDriver(s_0=7., v_0=54., delta=4., T=1., a=1., b=1.5)
 
 length = 300.
 
@@ -33,6 +35,8 @@ circularRoad.add_lane(lane1)
 lane1.add_vehicle(vehicle1)
 lane1.add_vehicle(vehicle2)
 lane1.add_vehicle(vehicle3)
+lane1.add_vehicle(vehicle4)
+lane1.add_vehicle(vehicle5)
 
 circularRoad.initialize_default()
 

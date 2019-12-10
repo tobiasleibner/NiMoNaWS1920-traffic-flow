@@ -45,7 +45,7 @@ class BaseRoadSimulation:
         stop simulation and continue it
     """
 
-    def __init__(self, canvas, x0, y0, x1, y1, model, time_discretization_scheme, lane_width=20, dt=1e-1):
+    def __init__(self, canvas, x0, y0, x1, y1, model, time_discretization_scheme, lane_width=30, dt=1e-1):
         self.custom_font = tkFont.Font(family="Helvetica", size=12, weight='bold')
         self.canvas = canvas
         self.x0 , self.y0, self.x1, self.y1 = x0, y0, x1, y1
